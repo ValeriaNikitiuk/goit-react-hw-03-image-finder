@@ -1,25 +1,27 @@
-import { Component } from 'react';
 import propTypes from 'prop-types';
-import s from './ImageGalleryItem.module.css';
+// import s from './ImageGalleryItem.module.css';
+import React, { Component } from 'react';
 
 class ImageGalleryItem extends Component {
   state = {
     showModal: false,
   };
 
+  static propTypes = {
+    src: propTypes.string.isRequired,
+    alt: propTypes.string.isRequired,
+    largeImageUrl: propTypes.string.isRequired,
+  };
+
   render() {
-    const { item } = this.props;
-    const { webformatURL } = item;
+    const { src, alt } = this.props;
+
     return (
-      <li className={s.galleryItem}>
-        <img src={webformatURL} alt="img" />
+      <li className="ImageGalleryItem">
+        <img src={src} alt={alt} className="ImageGalleryItemImage" />
       </li>
     );
   }
 }
-
-ImageGalleryItem.proPtypes = {
-  item: propTypes.object.isRequired,
-};
 
 export default ImageGalleryItem;

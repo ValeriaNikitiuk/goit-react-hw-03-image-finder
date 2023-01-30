@@ -1,47 +1,99 @@
 import { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
-import { searchPost } from '../servicesApi/posts-api';
 import { Button } from './Button/Button';
-import axios from 'axios';
+import pixabayApi from '../servicesApi/posts-api';
+
+const Status = {
+  IDLE: 'idle',
+  // непрацюючий
+
+  PENDING: 'pending',
+  //  ===== очікує
+  RESOLVED: 'resolved',
+  //  ВИРІШИЛИ:
+  REJECTED: 'rejected',
+  // відхилили
+};
 
 class App extends Component {
   state = {
-    items: [],
-    loading: false,
-    error: null,
+    images: [],
+    // loading: false,
     search: '',
+    status: 'idle',
     page: 1,
+    largeImage: '',
   };
 
   componentDidUdate(prevPops, prevState) {
-    const { search } = this.state;
-    if (prevState.search !== search) {
-      this.setState({ loading: true });
-      searchPost(search)
-        .then(data => this.setState({ items: data }))
-        .catch(error => this.setState({ error: error.message }))
-        .finaly(() => this.setState({ loading: false }));
+    const prevName = prevState.search;
+    const nextName = this.state.search;
+
+    if (prevName !== nextName) {
+      this.renderImg();
     }
   }
 
-  searchPost = ({ search }) => {
-    this.setState({ search });
+  renderImg = () => {
+    const { search, page } = this.state;
+
+    pixabayApi
+      .fetchImages(search, page)
+      .then(response =>
+        this.setState(prevState => ({
+          images: [...prevState.images, ...response.hits],
+          page: prevState.page + 1,
+        }))
+      )
+      .catch(error => this.setState({ error, status: Status.REJECTED }))
+      .finally(() => this.setState({ status: Status.RESOLVED }));
   };
 
-  loadMore = () => {
-    this.setState(({ page }) => ({ page: page + 1 }));
+  searchPosts = newSearch => {
+    this.setState({ search: newSearch, images: [], page: 1 });
   };
+
+  // loadMore = () => {
+  //   this.setState(({ page }) => ({ page: page + 1 }));
+  // };
+
   render() {
-    const { items, loading, error } = this.state;
-    const { searchPost, loadMore } = this;
-    return (
-      <>
-        <Searchbar onSubmit={searchPost} />
-        <ImageGallery items={items} />
-        <Button onClick={loadMore} />
-      </>
-    );
+    const { status, images, loading } = this.state;
+    const { searchPosts, loadMore, renderImg } = this;
+
+    if (status === Status.IDLE) {
+      return (
+        <div>
+          <Searchbar onSubmit={searchPosts} />
+        </div>
+      );
+    }
+    if (status === Status.PENDING) {
+      return (
+        <div>
+          <Searchbar onSubmit={searchPosts} />
+          <ImageGallery images={images} />
+        </div>
+      );
+    }
+    if (status === Status.REJECTED) {
+      return (
+        <div>
+          <Searchbar onSubmit={searchPosts} />
+          <p>something went wrong, try again</p>
+        </div>
+      );
+    }
+    if (status === Status.RESOLVED) {
+      return (
+        <div>
+          <Searchbar onSubmit={searchPosts} />
+          <ImageGallery images={images} />
+          <Button onClick={renderImg} />
+        </div>
+      );
+    }
   }
 }
 

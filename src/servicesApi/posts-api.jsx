@@ -1,22 +1,18 @@
-import axios from 'axios';
+const BASE_URL = `https://pixabay.com/api/`;
 
-// instance - це налаштований axios
+const API_KEY = '31921090-27d4ef087e87c171b6f0fd6ec';
 
-const instance = axios.create({
-  baseURL: 'https://pixabay.com/api/',
-});
-
-export const searchPost = async (q, _page = 1, per_page) => {
-  const { data } = await instance.get('/', {
-    params: {
-      q,
-      per_page: 12,
-    },
+function fetchImages(page, search) {
+  const url = `${BASE_URL}?q=${search}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`;
+  return fetch(url).then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    return Promise.reject(new Error('Something went wrong, please try again'));
   });
-  return data;
-};
+}
 
-export const getAllPosts = async () => {
-  const { data } = await instance.get('/');
-  return data;
-};
+const api = { fetchImages };
+
+export default api;
+//

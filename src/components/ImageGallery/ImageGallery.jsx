@@ -1,29 +1,24 @@
 import s from './ImageGallery.module.css';
-import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
+import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
+import propTypes from 'prop-types';
 
-const ImageGallery = ({ items }) => {
+function ImageGallery({ images }) {
   return (
-    <div>
-      <ul className={s.gallery}>
-        {items.map(item => (
-          
-        )
-          return (
-            <li
-              className={s.galleryItem}
-              key={id}
-              largeImage={largeImageURL}
-              preview={webformatURL}
-            ></li>
-          );
-        )}
-      </ul>
-    </div>
+    <ul className={s.ImageGallery}>
+      {images.map(image => (
+        <ImageGalleryItem
+          src={image.webformatURL}
+          alt={image.tags}
+          largeImageUrl={image.largeImageURL}
+          key={image.id}
+        />
+      ))}
+    </ul>
   );
+}
+
+ImageGallery.propTypes = {
+  images: propTypes.array,
 };
 
 export default ImageGallery;
-
-ImageGallery.defaultPros = {
-  items: [],
-};
