@@ -59,8 +59,8 @@ class App extends Component {
   // };
 
   render() {
-    const { status, images, loading } = this.state;
-    const { searchPosts, loadMore, renderImg } = this;
+    const { status, images } = this.state;
+    const { searchPosts, renderImg } = this;
 
     if (status === Status.IDLE) {
       return (
