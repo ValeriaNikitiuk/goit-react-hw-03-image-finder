@@ -3,6 +3,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
 import pixabayApi from '../servicesApi/posts-api';
+import Loader from './Loader/Loader';
 
 const Status = {
   IDLE: 'idle',
@@ -23,7 +24,7 @@ class App extends Component {
     search: '',
     status: 'idle',
     page: 1,
-    largeImage: '',
+    error: null,
   };
 
   componentDidUpdate(prevPops, prevState) {
@@ -51,7 +52,7 @@ class App extends Component {
   };
 
   searchPosts = newSearch => {
-    this.setState({ search: newSearch, images: [], page: 1 });
+    this.setState({ search: newSearch, page: 1, images: [] });
   };
 
   // loadMore = () => {
@@ -62,38 +63,22 @@ class App extends Component {
     const { status, images } = this.state;
     const { searchPosts, renderImg } = this;
 
-    if (status === Status.IDLE) {
-      return (
-        <div>
-          <Searchbar onSubmit={searchPosts} />
-        </div>
-      );
-    }
-    if (status === Status.PENDING) {
-      return (
-        <div>
-          <Searchbar onSubmit={searchPosts} />
-          <ImageGallery images={images} />
-        </div>
-      );
-    }
-    if (status === Status.REJECTED) {
-      return (
-        <div>
-          <Searchbar onSubmit={searchPosts} />
-          <p>something went wrong, try again</p>
-        </div>
-      );
-    }
-    if (status === Status.RESOLVED) {
-      return (
-        <div>
-          <Searchbar onSubmit={searchPosts} />
-          <ImageGallery images={images} />
-          <Button onClick={renderImg} />
-        </div>
-      );
-    }
+    return (
+      <>
+        <Searchbar onSubmit={searchPosts} />
+
+        {status === Status.IDLE && <p>Please enter your search term</p>}
+        {status === Status.PENDING && <Loader />}
+        {status === Status.REJECTED && <p>Something wrong, try later</p>}
+
+        {status === Status.RESOLVED && (
+          <>
+            <ImageGallery images={images} />
+            <Button onClick={renderImg} />
+          </>
+        )}
+      </>
+    );
   }
 }
 
