@@ -26,7 +26,7 @@ class App extends Component {
     largeImage: '',
   };
 
-  componentDidUdate(prevPops, prevState) {
+  componentDidUpdate(prevPops, prevState) {
     const prevName = prevState.search;
     const nextName = this.state.search;
 
