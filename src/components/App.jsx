@@ -32,6 +32,7 @@ class App extends Component {
     const nextName = this.state.search;
 
     if (prevName !== nextName) {
+      this.setState({ status: Status.PENDING });
       this.renderImg();
     }
   }
