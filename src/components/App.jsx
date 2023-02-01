@@ -37,7 +37,8 @@ class App extends Component {
     }
   }
 
-  renderImg = () => {
+  renderImg = async () => {
+    // this.setState({ status: Status.PENDING });
     const { search, page } = this.state;
 
     pixabayApi
@@ -56,9 +57,13 @@ class App extends Component {
     this.setState({ search: newSearch, page: 1, images: [] });
   };
 
-  // loadMore = () => {
-  //   this.setState(({ page }) => ({ page: page + 1 }));
-  // };
+  loadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
+  // плюсує сторінки , але не рендерить фото
 
   render() {
     const { status, images } = this.state;
@@ -75,7 +80,10 @@ class App extends Component {
         {status === Status.RESOLVED && (
           <>
             <ImageGallery images={images} />
-            <Button onClick={renderImg} />
+
+            <Button onClick={renderImg}>
+              <Loader />
+            </Button>
           </>
         )}
       </>
