@@ -28,16 +28,16 @@ class App extends Component {
   };
 
   componentDidUpdate(prevPops, prevState) {
-    const prevName = prevState.search;
-    const nextName = this.state.search;
-
-    if (prevName !== nextName) {
+    if (
+      prevState.search !== this.state.search ||
+      prevState.page !== this.state.page
+    ) {
       this.setState({ status: Status.PENDING });
       this.renderImg();
     }
   }
 
-  renderImg = async () => {
+  renderImg = () => {
     // this.setState({ status: Status.PENDING });
     const { search, page } = this.state;
 
@@ -67,7 +67,7 @@ class App extends Component {
 
   render() {
     const { status, images } = this.state;
-    const { searchPosts, renderImg } = this;
+    const { searchPosts, loadMore } = this;
 
     return (
       <>
@@ -77,11 +77,10 @@ class App extends Component {
         {status === Status.PENDING && <Loader />}
         {status === Status.REJECTED && <p>Something wrong, try later</p>}
 
-        {status === Status.RESOLVED && (
+        {images.length > 0 && (
           <>
             <ImageGallery images={images} />
-
-            <Button onClick={renderImg}>
+            <Button onClick={loadMore}>
               <Loader />
             </Button>
           </>
